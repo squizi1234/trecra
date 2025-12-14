@@ -10,14 +10,15 @@ import string
 SAVE_FILE = "result.txt"
 
 def save_clipboard_text():
-    text = pyperclip.paste().strip()
-    if not text:
-        return
+	text = pyperclip.paste().strip()
+	if not text:
+		return
 
-    with open(SAVE_FILE, "a", encoding="utf-8") as f:
-        f.write(text + " ")
+	with open(SAVE_FILE, "a", encoding="utf-8") as f:
+		f.write(f"\n{text}")
 
-    print("💾 сохранено:", text)
+
+	print("💾 сохранено:", text)
 
 # ================== MAIL.TM ==================
 if True:
