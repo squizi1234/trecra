@@ -7,18 +7,24 @@ import re
 import requests
 import random
 import string
+import tester
 SAVE_FILE = "result.txt"
 
 def save_clipboard_text():
+
 	text = pyperclip.paste().strip()
-	if not text:
-		return
+	apitru = tester.testerapi(api=[text])
+	if apitru:
+		if not text:
+			return
 
-	with open(SAVE_FILE, "a", encoding="utf-8") as f:
-		f.write(f"\n{text}")
+		with open(SAVE_FILE, "a", encoding="utf-8") as f:
+			f.write(f"\n{text}")
 
 
-	print("💾 сохранено:", text)
+		print("💾 сохранено:", text)
+	else:
+		print("❌ ключ не рабочий, не сохраняем")
 
 # ================== MAIL.TM ==================
 if True:
@@ -127,6 +133,7 @@ def wait_or_use_clipboard(expected_type, timeout=300):
 	raise TimeoutError("Буфер не дождался")
 
 def paste_clipboard():
+	time.sleep(5)
 	keyboard.press(Key.ctrl)
 	keyboard.press('v')
 	keyboard.release('v')
