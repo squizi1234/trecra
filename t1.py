@@ -1,39 +1,29 @@
-﻿import win32gui
-import win32con
+﻿from pywinauto import Desktop
 import time
 
-# Функция для перечисления всех видимых окон
-def enum_windows():
-    windows = []
-
-    def callback(hwnd, extra):
-        if win32gui.IsWindowVisible(hwnd):
-            title = win32gui.GetWindowText(hwnd)
-            if title:
-                windows.append((hwnd, title))
-        return True
-
-    win32gui.EnumWindows(callback, None)
-    return windows
-
-# Находим все окна Edge
-all_windows = enum_windows()
-edge_windows = [(hwnd, title) for hwnd, title in all_windows if 'Edge' in title]
+# Получаем окно Edge
+windows = Desktop(backend="uia").windows()
+edge_windows = [w for w in windows if "Edge" in w.window_text()]
 
 if not edge_windows:
-    print("Окна Microsoft Edge не найдены!")
+    print("Окна Edge не найдены")
 else:
-    # Берём первое окно
-    hwnd, title = edge_windows[0]
-    print(f"Используем окно: HWND={hwnd}, Title='{title}'")
-
-    # Координаты внутри окна, куда хотим кликнуть
-    x, y = 0, 0
-    lparam = (y << 16) | x
-
-    # Отправляем клик левой кнопкой мыши
-    win32gui.PostMessage(hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lparam)
-    time.sleep(0.05)
-    win32gui.PostMessage(hwnd, win32con.WM_LBUTTONUP, None, lparam)
-
-    print(f"Клик отправлен в окно Edge по координатам ({x}, {y})!")
+    window = edge_windows[0]  # берем первое найденное окно
+    print(f"Работаем с окном: '{window.window_text()}'")
+    
+    # Находим все поля для ввода
+    input_fields = [fld for fld in window.descendants(control_type="Edit") if fld.is_visible()]
+    
+    if not input_fields:
+        print("Поля ввода не найдены")
+    else:
+        # Например, берём пустое поле (обычно второе)
+        target_field = input_fields[1]
+        target_field.set_focus()
+        time.sleep(0.2)
+        target_field.type_keys("Привет, это тест!", with_spaces=True)
+        print("Текст введён в поле")
+        
+        # Если нужно, можно нажать Enter
+        target_field.type_keys("{ENTER}")
+        print("Enter нажат")
