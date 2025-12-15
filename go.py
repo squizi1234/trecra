@@ -167,7 +167,11 @@ while True:
 		start_time = event["time"]
 
 		if event["type"] == "click":
-			mouse.position = (event["x"], event["y"])
+			OFFSET_X = 1920  # ширина первого монитора (или X позиции второго)
+			OFFSET_Y = 0     # обычно 0, если второй монитор выровнен по верхнему краю
+			new_x = event["x"] + OFFSET_X
+			new_y = event["y"] + OFFSET_Y
+			mouse.position = (new_x, new_y)
 			mouse.click(Button.left if "left" in event["button"] else Button.right)
 
 		elif event["type"] == "key_combo":
