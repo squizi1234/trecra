@@ -14,7 +14,7 @@ with open("result.txt", encoding="utf-8") as f:
                 input="ку"
             )
         except Exception as e:
-            print(f"Error with API key {api_key}: {e}")
+            print(f"Error with API key {api_key}")
             continue
 
 print(response.usage)
