@@ -227,14 +227,14 @@ def wait_for_element(elements, timeout=10):
 	return None
 
 def print(text, *args):
-	global curtain
+	global curtain,SAVE_FILE
 
 	if args:
 		text = text.format(*args)
 
 	builtins.print(text)
 	count = 0
-	with open("SAVE_FILE", "r", encoding="utf-8") as f:
+	with open(SAVE_FILE, "r", encoding="utf-8") as f:
 		for line in f:
 			count += 1
 	if curtain:
