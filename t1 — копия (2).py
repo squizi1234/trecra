@@ -12,17 +12,18 @@ import win32gui
 import win32con
 import builtins
 curtain = None
-def show_keyboard_safe_curtain(alpha=180):
+
+def show_keyboard_safe_curtain(hwnd, alpha=180):
+	global curtain
+	x1, y1, x2, y2 = win32gui.GetWindowRect(hwnd)
+
 	root = tk.Tk()
 	root.overrideredirect(True)
 	root.configure(bg="black")
 
+	root.geometry(f"{x2-x1}x{y2-y1}+{x1}+{y1}")
 	root.attributes("-topmost", True)
 	root.attributes("-alpha", alpha / 255)
-
-	# 👇 ВАЖНО
-	root.geometry("1x1+0+0")
-	root.withdraw()
 
 	status_var = tk.StringVar(value="⏳ Ожидание...")
 
@@ -42,62 +43,15 @@ def show_keyboard_safe_curtain(alpha=180):
 	style |= win32con.WS_EX_NOACTIVATE
 	win32gui.SetWindowLong(hwnd_overlay, win32con.GWL_EXSTYLE, style)
 
+	# 👉 возвращаем root наружу
 	root.status_var = status_var
 	return root
 
-def follow_window(curtain, get_hwnd_func, interval=300):
-	def tick():
-		hwnd = get_hwnd_func()
+def run_curtain(hwnd):
 
-		# ❌ окна нет — скрываем занавес
-		if not hwnd or not win32gui.IsWindow(hwnd):
-			curtain.withdraw()
-			curtain.after(interval, tick)
-			return
-
-		# если свернуто — скрываем
-		if win32gui.IsIconic(hwnd):
-			curtain.withdraw()
-			curtain.after(interval, tick)
-			return
-
-		try:
-			x1, y1, x2, y2 = win32gui.GetWindowRect(hwnd)
-
-			# если окно слишком маленькое / странное
-			if x2 - x1 < 50 or y2 - y1 < 50:
-				curtain.withdraw()
-			else:
-				curtain.deiconify()
-				curtain.geometry(f"{x2-x1}x{y2-y1}+{x1}+{y1}")
-
-		except:
-			curtain.withdraw()
-
-		curtain.after(interval, tick)
-
-	tick()
-def find_edge_hwnd():
-	try:
-		windows = Desktop(backend="uia").windows()
-		for w in windows:
-			if "InPrivate" in w.window_text():
-				return w.handle
-	except:
-		pass
-	return None
-
-def start_curtain_system():
 	global curtain
-	curtain = show_keyboard_safe_curtain()
-
-	# запускаем слежение
-	follow_window(curtain, find_edge_hwnd)
-
+	curtain = show_keyboard_safe_curtain(hwnd)
 	curtain.mainloop()
-
-
-
 RECORD_FILE = "recordinggff.json"
 SAVE_FILE = "result.txt"
 API = "https://api.mail.tm"
@@ -213,21 +167,21 @@ def wait_for_element(elements, timeout=10):
 	return None
 
 def print(text, *args):
-	global curtain
+    global curtain
 
-	if args:
-		text = text.format(*args)
+    if args:
+        text = text.format(*args)
 
-	builtins.print(text)
+    builtins.print(text)
 
-	if curtain:
-		try:
-			curtain.after(
-				0,
-				lambda t=text: curtain.status_var.set(t)
-			)
-		except:
-			pass
+    if curtain:
+        try:
+            curtain.after(
+                0,
+                lambda t=text: curtain.status_var.set(t)
+            )
+        except:
+            pass
 
 
 # ---------------- Autoplay ----------------
@@ -258,8 +212,13 @@ def autoplay():
 			hwnd = edge_window.handle
 			# Запускаем занавес в отдельном потоке
 
+			threading.Thread(
+				target=run_curtain,
+				args=(hwnd,),
+				daemon=True
+			).start()
 
-
+			time.sleep(0.5)  # дать окну стартовать
 			if not edge_windows: 
 				time.sleep(0.5)
 				continue
@@ -331,31 +290,11 @@ def autoplay():
 
 # ---------------- MAIN ----------------
 mode = input("Выберите режим: (r) запись, (p) воспроизведение: ").strip().lower()
-if mode == "p":
-	# Запускаем overlay
+if mode=="p":
+	while True:
+		os.system("start msedge --inprivate")
 
-
-	# Запускаем автоплей в другом потоке
-	def start_autoplay_loop():
-		while True:
-			os.system("start msedge --inprivate")
-			autoplay()
-			save_clipboard_text()
-
-#threading.Thread(target=start_autoplay_loop, daemon=True).start()
-
-
-	#threading.Thread(target=loop_autoplay, daemon=True).start()
-
-	curtain = show_keyboard_safe_curtain()
-	follow_window(curtain, find_edge_hwnd)
-
-	# Запускаем autoplay в отдельном потоке
-	threading.Thread(target=start_autoplay_loop, daemon=True).start()
-
-	# GUI главный поток
-	curtain.mainloop()
-
-
+		autoplay()
+		save_clipboard_text()
 else:
 	print("❌ Используйте 'p' для воспроизведения записи")
