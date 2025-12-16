@@ -13,50 +13,50 @@ import win32con
 import builtins
 curtain = None
 def show_keyboard_safe_curtain(alpha=180):
-    root = tk.Tk()
-    root.overrideredirect(True)
-    root.configure(bg="black")
+	root = tk.Tk()
+	root.overrideredirect(True)
+	root.configure(bg="black")
 
-    root.attributes("-topmost", True)
-    root.attributes("-alpha", alpha / 255)
+	root.attributes("-topmost", True)
+	root.attributes("-alpha", alpha / 255)
 
-    root.geometry("1x1+0+0")
-    root.withdraw()
+	root.geometry("1x1+0+0")
+	root.withdraw()
 
-    # Верхний текст
-    status_var = tk.StringVar(value="⏳ Ожидание...")
-    label_top = tk.Label(
-        root,
-        textvariable=status_var,
-        fg="white",
-        bg="black",
-        font=("Segoe UI", 20, "bold")
-    )
-    label_top.place(relx=0.5, rely=0.45, anchor="center")  # чуть выше центра
+	# Верхний текст
+	status_var = tk.StringVar(value="⏳ Ожидание...")
+	label_top = tk.Label(
+		root,
+		textvariable=status_var,
+		fg="white",
+		bg="black",
+		font=("Segoe UI", 20, "bold")
+	)
+	label_top.place(relx=0.5, rely=0.45, anchor="center")  # чуть выше центра
 
-    # Нижний текст с символами запрета
-    status_var_bottom = tk.StringVar(value="🚫🖱️  🚫⌨️")
-    label_bottom = tk.Label(
-        root,
-        textvariable=status_var_bottom,
-        fg="white",
-        bg="black",
-        font=("Segoe UI", 40, "bold")  # можно сделать крупнее
-    )
-    label_bottom.place(relx=0.5, rely=0.55, anchor="center")  # чуть ниже центра
+	# Нижний текст с символами запрета
+	status_var_bottom = tk.StringVar(value="🚫🖱️  🚫⌨️")
+	label_bottom = tk.Label(
+		root,
+		textvariable=status_var_bottom,
+		fg="white",
+		bg="black",
+		font=("Segoe UI", 40, "bold")  # можно сделать крупнее
+	)
+	label_bottom.place(relx=0.5, rely=0.55, anchor="center")  # чуть ниже центра
 
-    root.update_idletasks()
+	root.update_idletasks()
 
-    hwnd_overlay = win32gui.GetParent(root.winfo_id())
-    style = win32gui.GetWindowLong(hwnd_overlay, win32con.GWL_EXSTYLE)
-    style |= win32con.WS_EX_NOACTIVATE
-    win32gui.SetWindowLong(hwnd_overlay, win32con.GWL_EXSTYLE, style)
+	hwnd_overlay = win32gui.GetParent(root.winfo_id())
+	style = win32gui.GetWindowLong(hwnd_overlay, win32con.GWL_EXSTYLE)
+	style |= win32con.WS_EX_NOACTIVATE
+	win32gui.SetWindowLong(hwnd_overlay, win32con.GWL_EXSTYLE, style)
 
-    # Сохраняем переменные для дальнейшего использования
-    root.status_var = status_var
-    root.status_var_bottom = status_var_bottom
+	# Сохраняем переменные для дальнейшего использования
+	root.status_var = status_var
+	root.status_var_bottom = status_var_bottom
 
-    return root
+	return root
 
 
 def follow_window(curtain, get_hwnd_func, interval=300):
@@ -233,13 +233,17 @@ def print(text, *args):
 		text = text.format(*args)
 
 	builtins.print(text)
-
+	count = 0
+	with open("SAVE_FILE", "r", encoding="utf-8") as f:
+		for line in f:
+			count += 1
 	if curtain:
 		try:
-			curtain.after(
-				0,
-				lambda t=text: curtain.status_var.set(f"{t}")
-			)
+			curtain.after(0, lambda t=text: (
+				curtain.status_var.set(f"{t}"),
+				curtain.status_var_bottom.set(f"🚫🖱️ {count} 🚫⌨️")
+			))
+
 		except:
 			pass
 
