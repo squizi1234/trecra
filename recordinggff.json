@@ -1,0 +1,92 @@
+[
+    {
+        "type": "click_button",
+        "text": "1"
+    },
+    {
+        "type": "click_link",
+        "text": "Sign up"
+    },
+    {
+        "type": "edit_field",
+        "text": "￼",
+        "value_type": "email"
+    },
+    {
+        "type": "click_button",
+        "text": "Продолжить"
+    },
+    {
+        "type": "edit_field",
+        "text": "Edit 3",
+        "value_type": "user",
+        "value": "gdfgdfgfdgdgdfdfgdgdfgdfgd"
+    },
+    {
+        "type": "click_button",
+        "text": "Продолжить"
+    },
+    {
+        "type": "edit_field",
+        "text": "￼",
+        "value_type": "code"
+    },
+    {
+        "type": "click_button",
+        "text": "Продолжить"
+    },
+    {
+        "type": "edit_field",
+        "text": "￼",
+        "value_type": "user",
+        "value": "fdsfsddfgdfdffgdfgf"
+    },
+    {
+        "type": "spinbutton",
+        "name": "день, День рождения",
+        "value_type": "birthdate",
+        "part": "day"
+    },
+    {
+        "type": "spinbutton",
+        "name": "месяц, День рождения",
+        "value_type": "birthdate",
+        "part": "month"
+    },
+    {
+        "type": "spinbutton",
+        "name": "год, День рождения",
+        "value_type": "birthdate",
+        "part": "year"
+    },
+    {
+        "type": "click_button",
+        "text": "Продолжить"
+    },
+    {
+        "type": "edit_field",
+        "text": "￼",
+        "value_type": "user",
+        "value": "123"
+    },
+    {
+        "type": "click_button",
+        "text": "Create organization"
+    },
+    {
+        "type": "click_button",
+        "text": "Continue"
+    },
+    {
+        "type": "click_button",
+        "text": "Generate API Key"
+    },
+    {
+        "type": "click_button",
+        "text": "Copy"
+    },
+    {
+        "type": "click_button",
+        "text": "Закрыть вкладку"
+    }
+]

@@ -1,9 +1,8 @@
-﻿import json, time, random, string, pyperclip, re, requests,os
+﻿import json, time, random, string, pyperclip, re, requests
 from pywinauto import Desktop
 from pynput.keyboard import Controller, Key
-import tester
+
 RECORD_FILE = "recordinggff.json"
-SAVE_FILE = "result.txt"
 API = "https://api.mail.tm"
 keyboard = Controller()
 if True:
@@ -21,21 +20,6 @@ if True:
 			print(e)
 			return None
 # ---------------- MailTM ----------------
-def save_clipboard_text():
-
-	text = pyperclip.paste().strip()
-	apitru = tester.testerapi(api=[text])
-	if apitru:
-		if not text:
-			return
-
-		with open(SAVE_FILE, "a", encoding="utf-8") as f:
-			f.write(f"\n{text}")
-
-
-		print("💾 сохранено:", text)
-	else:
-		print("❌ ключ не рабочий, не сохраняем")
 class MailTM:
     def __init__(self):
         self.email = None
@@ -126,7 +110,7 @@ def autoplay():
         return
 
     print("🚀 Старт через 5 секунд...")
-    #time.sleep(1)
+    time.sleep(5)
     
     mail = MailTM()
     mail.create_account()
@@ -212,10 +196,6 @@ def autoplay():
 # ---------------- MAIN ----------------
 mode = input("Выберите режим: (r) запись, (p) воспроизведение: ").strip().lower()
 if mode=="p":
-    while True:
-        os.system("start msedge --inprivate")
-
-        autoplay()
-        save_clipboard_text()
+    autoplay()
 else:
     print("❌ Используйте 'p' для воспроизведения записи")
